@@ -1,0 +1,7 @@
+
+1.  the gameflow() module gets called
+->  createStrBtn gets called and creates Start button
+2.  Start button gets clicked 
+->  createPlayerFrom gets called and creates a from where palyers can enter their
+    names and submit the from
+3.     
