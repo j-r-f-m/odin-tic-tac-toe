@@ -97,7 +97,11 @@ const createPages = (() => {
         sbtBtn.setAttribute('class', 'btn');
         sbtBtn.setAttribute('type', 'submit');
         sbtBtn.textContent = 'Submit Names';
-        sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
+        //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
+        sbtBtn.addEventListener('click', () => {
+            createPlayersDisplay();
+            createBoard();
+        });
         divSbtBtn.appendChild(sbtBtn);
 
         // test        
@@ -142,15 +146,42 @@ const createPages = (() => {
         divMainTitle.appendChild(divPlayer2);
 
 
-        createBoard();
-        return {player1:player1, player2:player2};
+        //createBoard();
+    }
+    
+    const restartBtn = () => {
+        // create button that restarts game on lick
+        const divMain = document.querySelector('main');
+        const rstBtn = document.createElement('button');
+        rstBtn.setAttribute('id', 'btn-restart');
+        rstBtn.setAttribute('class', 'btn');
+        rstBtn.setAttribute('type', 'button');
+        rstBtn.textContent = 'Restart Button';
+        //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
+        rstBtn.addEventListener('click', () => {
+            createBoard();
+        });
+        divMain.appendChild(rstBtn);
+        
+        
+        
+        console.log('restart button');
     }
 
     const createBoard = () => {
         // test
         //console.log('lol game Board');
         // delete name submit form
-        dltChildNode('.form-players');
+        const divMain = document.querySelector('main');
+        console.log(divMain);
+
+        // check if main has a child with the class name of form-palyers
+        if (divMain.querySelector('.form-players') !== null) {
+            dltChildNode('.form-players');
+        }
+        
+        //dltChildNode('.form-players');
+        
  
         const boardContainer = document.createElement('div'); 
         boardContainer.setAttribute('class', 'game-board');
@@ -174,10 +205,13 @@ const createPages = (() => {
         gameBoardArray.push(tile);
         i++;
         }
+        // mark starting player
+        gameFlow.markPlayerTurn();
     }
+    
     return {
         createStartBtn,  createPlayerForm, createBoard, 
-        createPlayersDisplay, gameBoardArray
+        createPlayersDisplay, gameBoardArray, restartBtn
     }
 })();
 
@@ -200,6 +234,21 @@ const gameFlow = (()=> {
     // keep track of who's turn it is
     // player 1 always starts
     const whoTurn = {turn: 'player1'}
+
+    const markPlayerTurn = () => {
+        // mark the player display of the player who has initiative
+
+        const displayP1 = document.querySelector('.display-player-1');
+        const displayP2 = document.querySelector('.display-player-2');
+
+        if (whoTurn.turn === 'player1') {
+            displayP2.style.backgroundColor = 'white';
+            displayP1.style.backgroundColor = 'green';
+        } else if (whoTurn.turn === 'player2') {
+            displayP1.style.backgroundColor = 'white';
+            displayP2.style.backgroundColor = 'green';
+        }
+    }
 
     const checkForDraw = () => {
         // functions checks if all tiles have been clicked
@@ -244,6 +293,9 @@ const gameFlow = (()=> {
             divTilesList[arrayWinningTiles[i]].style.backgroundColor = 'red';
         }
         
+        //
+        createPages.restartBtn();
+
         // change total wins of winning player
         if (winningPlayer === 'player-1') {
             gameFlow.player1.wins += 1;
@@ -383,7 +435,7 @@ const gameFlow = (()=> {
     } 
     
     const clickTile = (e) => {
-        // function for clicking tile
+        // function for clicking tile gets executed whenever a tile is clicked
         // adds x- and o-symbols if tile does not have a symbol
         // calls function to see if one player has won
          
@@ -396,6 +448,7 @@ const gameFlow = (()=> {
         const currEle = document.getElementById(idCurrEle);
 
         //console.log(currEle.firstElementChild.className)
+        markPlayerTurn();
 
         // check if firstElementChild has already been marked by one of the players
         if (
@@ -431,12 +484,13 @@ const gameFlow = (()=> {
             // give initiative to player 2
             gameFlow.whoTurn.turn = 'player1';
         };
+        
         // check if someone has won
         checkWinConditions();
     }
 
 
-    return {clickTile, whoTurn, checkWinConditions,player1, player2}
+    return {clickTile, whoTurn, checkWinConditions,player1, player2, markPlayerTurn}
 })();
 
 //console.log(createPages.gameBoardArray)
