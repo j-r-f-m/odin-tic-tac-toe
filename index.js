@@ -1,4 +1,4 @@
-
+// +++++++++++++++++++++++++++++++++++ Create DOM Objects +++++++++++++++++++++
 const createPages = (() => {
     // function that creates the pages of the game
 
@@ -29,6 +29,7 @@ const createPages = (() => {
         // test
         //console.log('delete start btn');
     }
+
 
     const createPlayerForm = () => {
         // function that creates form so players can insert names
@@ -141,13 +142,16 @@ const createPages = (() => {
         const divPlayer1 = document.createElement('div');
         divPlayer1.setAttribute('class', 'display-player-1');
         //divPlayer1.textContent = `${player1.name} has ${player1.wins} wins.`;
-        divPlayer1.textContent = `${inputPlyr1} has 0 wins.`;
+        divPlayer1.textContent = `${inputPlyr1} - Wins: 0`;
         divMainTitle.appendChild(divPlayer1);
         // player 2
         const divPlayer2 = document.createElement('div');
         divPlayer2.setAttribute('class', 'display-player-2');
-        divPlayer2.textContent = `${inputPlyr2} has 0 wins.`;
+        divPlayer2.textContent = `${inputPlyr2} - Wins: 0.`;
         divMainTitle.appendChild(divPlayer2);
+
+        // give player one initiative from the start
+        gameFlow.markTrnPlyr1();
 
         // needs to be called here because of form validation
         createBoard();
@@ -163,6 +167,8 @@ const createPages = (() => {
         rstBtn.textContent = 'Restart Button';
         //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
         rstBtn.addEventListener('click', () => {
+            dltChildNode('.game-board');
+            dltChildNode('#btn-restart');
             createBoard();
         });
         divMain.appendChild(rstBtn);
@@ -172,12 +178,34 @@ const createPages = (() => {
         console.log('restart button');
     }
 
+    const tileNotClickable = () => {
+        // make tiles not clickable after one player wins
+
+        // select all tiles in document
+        const tileArr = document.getElementsByClassName('tile');
+        console.log(tileArr);
+
+        // iterate over array and remove the eventlisteners from the tiles
+        // so tiles can not be clicked anymore
+        for (let i = 0; i < tileArr.length; i++) {
+            tileArr[i].removeEventListener('click', gameFlow.clickTile);
+        }
+
+        
+    }
+
     const createBoard = () => {
         // test
         //console.log('lol game Board');
         // delete name submit form
         const divMain = document.querySelector('main');
-        console.log(divMain);
+        
+        // test
+        //console.log(divMain);
+
+        // empty gameBoardArray() if user clicks restart after winning one game
+        gameBoardArray.length = 0;
+        //console.log(gameBoardArray);
 
         // check if main has a child with the class name of form-palyers
         if (divMain.querySelector('.form-players') !== null) {
@@ -185,7 +213,7 @@ const createPages = (() => {
         }
         
         //dltChildNode('.form-players');
-        
+    
  
         const boardContainer = document.createElement('div'); 
         boardContainer.setAttribute('class', 'game-board');
@@ -208,27 +236,38 @@ const createPages = (() => {
         // push tiles into  gameBoardArray
         gameBoardArray.push(tile);
         i++;
+
+        //console.log(gameBoardArray)
         }
         // mark starting player
-        gameFlow.markPlayerTurn();
+        //gameFlow.markPlayerTurn();
     }
     
+
+
     return {
-        createStartBtn,  createPlayerForm, createBoard, 
-        createPlayersDisplay, gameBoardArray, restartBtn
+        createStartBtn,  createPlayerForm, createBoard, tileNotClickable,
+        createPlayersDisplay, restartBtn,
+        gameBoardArray,
     }
 })();
 
+
+// ++++++++++++++++++++++++++++++ Player Objects ++++++++++++++++++++++++++++++
 const createPlayer = (name, wins) => {
     // create palyers to store win count and palyer name
-    return {name, wins};
+
+    const wonLastRound = false;
+    return {name, wins, wonLastRound};
 }
 
+//*++++++++++++++++++++++++++++++ GAME FLOW +++++++++++++++++++++++++++++++++ */
 const gameFlow = (()=> {
 
 
     const player1 = createPlayer('Player-1', 0);
     const player2 = createPlayer('Player-2', 0);
+    console.log(player1);
     // start button gets created, players will be able to choose in a second 
     // implementation if they want to play pvp or pve
     // after chossing pvp players will be able to enter their names
@@ -239,19 +278,28 @@ const gameFlow = (()=> {
     // player 1 always starts
     const whoTurn = {turn: 'player1'}
 
-    const markPlayerTurn = () => {
-        // mark the player display of the player who has initiative
+    const markTrnPlyr1 = () => {
+        // mark player-1 display so users can see which player has the initiative
 
         const displayP1 = document.querySelector('.display-player-1');
         const displayP2 = document.querySelector('.display-player-2');
+        
+        displayP1.style.backgroundColor = 'green';
+        displayP2.style.backgroundColor = 'white';
+        
 
-        if (whoTurn.turn === 'player1') {
-            displayP2.style.backgroundColor = 'white';
-            displayP1.style.backgroundColor = 'green';
-        } else if (whoTurn.turn === 'player2') {
-            displayP1.style.backgroundColor = 'white';
-            displayP2.style.backgroundColor = 'green';
-        }
+    }
+
+    const markTrnPlyr2 = () => {
+        // mark player-2 display so users can see which player has the initiative
+
+        const displayP1 = document.querySelector('.display-player-1');
+        const displayP2 = document.querySelector('.display-player-2');
+        
+        displayP1.style.backgroundColor = 'white';
+        displayP2.style.backgroundColor = 'green';
+        
+
     }
 
     const checkForDraw = () => {
@@ -319,13 +367,15 @@ const gameFlow = (()=> {
         // test
         // console.log(checkDraw)
        
-        if (  // first row
+        if (  // first row wins
             createPages.gameBoardArray[0].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[1].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[2].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
             playerWins([0, 1, 2], 'player-1');
+            // make tiles not after win
+            createPages.tileNotClickable();
             return
         } else if(
             createPages.gameBoardArray[0].firstElementChild.className === 'O' &&
@@ -452,7 +502,7 @@ const gameFlow = (()=> {
         const currEle = document.getElementById(idCurrEle);
 
         //console.log(currEle.firstElementChild.className)
-        markPlayerTurn();
+        //markPlayerTurn();
 
         // check if firstElementChild has already been marked by one of the players
         if (
@@ -467,6 +517,9 @@ const gameFlow = (()=> {
             // test
             //console.log('player one turn');
             //console.log('does not have child');
+
+            // mark player-1 and clear player-2 before new mark is set 
+            gameFlow.markTrnPlyr1();
             
             // select img element and link it the x.svg in the images folder
             const symX = document.querySelector(`.${idCurrEle}`);
@@ -477,9 +530,17 @@ const gameFlow = (()=> {
             currEle.appendChild(symX);
             // give initiative to player 2
             gameFlow.whoTurn.turn = 'player2';
+
+            // mark player-2 and clear player-1 after new mark was set
+            gameFlow.markTrnPlyr2();
+
             // test
             //console.log(gameFlow.whoTurn.turn);
         } else if(gameFlow.whoTurn.turn === 'player2') {
+
+            // mark player-2 and clear player-1 before new mark is set
+            gameFlow.markTrnPlyr2();
+
             const symO = document.querySelector(`.${idCurrEle}`);
             symO.setAttribute('src','images/o.svg'); 
             symO.setAttribute('id', idCurrEle);
@@ -487,6 +548,9 @@ const gameFlow = (()=> {
             currEle.appendChild(symO);
             // give initiative to player 2
             gameFlow.whoTurn.turn = 'player1';
+
+            // mark player-1 and clear player-2 after new mark was set
+            gameFlow.markTrnPlyr1();
         };
         
         // check if someone has won
@@ -494,7 +558,10 @@ const gameFlow = (()=> {
     }
 
 
-    return {clickTile, whoTurn, checkWinConditions,player1, player2, markPlayerTurn}
+    return {
+        clickTile, markTrnPlyr1, markTrnPlyr2, checkWinConditions, 
+        whoTurn, player1, player2,
+    }
 })();
 
 //console.log(createPages.gameBoardArray)
