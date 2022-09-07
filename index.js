@@ -100,7 +100,10 @@ const createPages = (() => {
         //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
         sbtBtn.addEventListener('click', () => {
             createPlayersDisplay();
-            createBoard();
+            
+            // I tried to call the createBoard() function here but it broke my
+            // form validation 
+            //createBoard();
         });
         divSbtBtn.appendChild(sbtBtn);
 
@@ -111,7 +114,8 @@ const createPages = (() => {
     const createPlayersDisplay = () => {
         // create score display 
 
-        // form validation
+        // form validation - the automatic validation does not work I had to add
+        // the following code 
         const inputPlyr1 = document.getElementById('name-p1').value;
         const inputPlyr2 = document.getElementById('name-p2').value;
 
@@ -145,8 +149,8 @@ const createPages = (() => {
         divPlayer2.textContent = `${inputPlyr2} has 0 wins.`;
         divMainTitle.appendChild(divPlayer2);
 
-
-        //createBoard();
+        // needs to be called here because of form validation
+        createBoard();
     }
     
     const restartBtn = () => {
@@ -467,7 +471,7 @@ const gameFlow = (()=> {
             // select img element and link it the x.svg in the images folder
             const symX = document.querySelector(`.${idCurrEle}`);
             //console.log(symX)
-            symX.setAttribute('src','/images/x.svg'); 
+            symX.setAttribute('src','images/x.svg'); 
             symX.setAttribute('id', idCurrEle);
             symX.setAttribute('class', 'X'); 
             currEle.appendChild(symX);
@@ -477,7 +481,7 @@ const gameFlow = (()=> {
             //console.log(gameFlow.whoTurn.turn);
         } else if(gameFlow.whoTurn.turn === 'player2') {
             const symO = document.querySelector(`.${idCurrEle}`);
-            symO.setAttribute('src','/images/o.svg'); 
+            symO.setAttribute('src','images/o.svg'); 
             symO.setAttribute('id', idCurrEle);
             symO.setAttribute('class', 'O');
             currEle.appendChild(symO);
