@@ -113,6 +113,7 @@ main {
     padding: 2rem 4rem 2rem 4rem;
 }
 
+
 form {
     background-color: #5A464C;
 }
@@ -128,7 +129,7 @@ form {
     margin: 2rem;
 } 
 
-.display-player-1, .display-player-2 {
+.display-player-1, .display-player-2, .winning-player, #btn-reset, #btn-rematch  {
     margin: 1rem;
     padding: 1rem;
     background-color: white;

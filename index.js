@@ -79,8 +79,8 @@ const createPages = (() => {
         const labelP2 = document.createElement('label');
         labelP2.setAttribute('for', 'name-p2');
         labelP2.textContent = 'P2-Name: ';
-        divPlyr2.appendChild(labelP2);        
-
+        divPlyr2.appendChild(labelP2);    
+    
         const inputP2 = document.createElement('input');
         inputP2.setAttribute('name', 'name-p2');
         inputP2.setAttribute('id', 'name-p2'); 
@@ -155,26 +155,90 @@ const createPages = (() => {
 
         // needs to be called here because of form validation
         createBoard();
+        createBtnDisplay();
+        
+    }
+
+    const createBtnDisplay = () => {
+        // create div where the restart und reset buttons are placed after one 
+        // round ist played
+        const divMain = document.querySelector('main');
+
+        const btnDisplay = document.createElement('div');
+        btnDisplay.setAttribute('class', 'button-display');
+        divMain.appendChild(btnDisplay);
+    }
+
+    const winnerDisplay = (winner) => {
+        // add a winner display between the player displays
+
+        // create winner display
+        const divWinner = document.createElement('div');
+        divWinner.setAttribute('class', 'winning-player');
+        divWinner.textContent = `${winner} has won.`;
+
+
+
+        const divMainTitle = document.querySelector('.main-title-container');
+        divMainTitle.insertBefore(divWinner, divMainTitle.children[1]);
+        /* const divMainTitle = document.querySelector('.main-title-container');
+        const mainDivTitleArray = divMainTitle.childNodes;
+        
+        const divWinner = document.createElement('div');
+        divWinner.setAttribute('class', 'winning-player');
+        divWinner.textContent = `${winner} has won.`;
+
+        console.log(mainDivTitleArray) */
+
     }
     
-    const restartBtn = () => {
+    const rematchBtn = () => {
         // create button that restarts game on lick
-        const divMain = document.querySelector('main');
+        const divBtnDisplay = document.querySelector('.button-display');
+        const rmtBtn = document.createElement('button');
+        rmtBtn.setAttribute('id', 'btn-rematch');
+        rmtBtn.setAttribute('class', 'btn');
+        rmtBtn.setAttribute('type', 'button');
+        rmtBtn.textContent = 'Rematch Button';
+        //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
+        rmtBtn.addEventListener('click', () => {
+            // delete nodes that are not needed anymore
+            dltChildNode('.game-board');
+            dltChildNode('.button-display');
+            dltChildNode('.winning-player');
+            // create the elements that are needed for a new round
+            createBoard();
+            createBtnDisplay();
+            gameFlow.newRndMarkPlyrTurn();
+
+            
+        });
+        divBtnDisplay.appendChild(rmtBtn);
+        console.log('restart button');
+    }
+
+    const resetBtn = () => {
+        // create button that restarts game on lick
+        const divBtnDisplay = document.querySelector('.button-display');
         const rstBtn = document.createElement('button');
-        rstBtn.setAttribute('id', 'btn-restart');
+        rstBtn.setAttribute('id', 'btn-reset');
         rstBtn.setAttribute('class', 'btn');
         rstBtn.setAttribute('type', 'button');
-        rstBtn.textContent = 'Restart Button';
+        rstBtn.textContent = 'Reset Button';
         //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
         rstBtn.addEventListener('click', () => {
+            // delete nodes that are not needed anymore
             dltChildNode('.game-board');
-            dltChildNode('#btn-restart');
-            createBoard();
+            dltChildNode('.button-display');
+            dltChildNode('.main-title-container');
+            //dltChildNode('.winning-player');
+            // create the elements that are needed for a new round
+            createStartBtn();
+            
+
+            
         });
-        divMain.appendChild(rstBtn);
-        
-        
-        
+        divBtnDisplay.appendChild(rstBtn);
         console.log('restart button');
     }
 
@@ -244,10 +308,9 @@ const createPages = (() => {
     }
     
 
-
     return {
         createStartBtn,  createPlayerForm, createBoard, tileNotClickable,
-        createPlayersDisplay, restartBtn,
+        createPlayersDisplay, rematchBtn, resetBtn,winnerDisplay, 
         gameBoardArray,
     }
 })();
@@ -267,6 +330,14 @@ const gameFlow = (()=> {
 
     const player1 = createPlayer('Player-1', 0);
     const player2 = createPlayer('Player-2', 0);
+
+    const resetPlayerObjs = () => {
+        gameFlow.player1.wins = 0;
+        gameFlow.player2.wins = 0;
+        gameFlow.whoTurn = 'player-1';
+    }
+        
+
     console.log(player1);
     // start button gets created, players will be able to choose in a second 
     // implementation if they want to play pvp or pve
@@ -276,7 +347,7 @@ const gameFlow = (()=> {
 
     // keep track of who's turn it is
     // player 1 always starts
-    const whoTurn = {turn: 'player1'}
+    const whoTurn = {turn: 'player-1'}
 
     const markTrnPlyr1 = () => {
         // mark player-1 display so users can see which player has the initiative
@@ -337,26 +408,66 @@ const gameFlow = (()=> {
         
     }
 
-    const playerWins = (arrayWinningTiles, winningPlayer) => {
+    const markWinningPlyr = (winningPlyr) => {
+        // mark winning player with a color
 
+        const plyrWon = document.querySelector(winningPlyr);
+        plyrWon.style.backgroundColor = 'pink';
+        if (winningPlyr === '.display-player-1') {
+            // change losing player display color to white
+            const plyrLost = document.querySelector('.display-player-2');
+            plyrLost.style.backgroundColor = 'white';
+
+
+        } else if (winningPlyr === '.display-player-2') {
+            const plyrLost = document.querySelector('.display-player-1');
+            plyrLost.style.backgroundColor = 'white';
+        }
+
+    
+    }
+
+    const markWinningTiles = (arrayWinningTiles, winningPlayer) => {
         // change color of winning tiles
         const divTilesList =  document.querySelectorAll('.tile');
         for (let i = 0; i < arrayWinningTiles.length; i++) {
             divTilesList[arrayWinningTiles[i]].style.backgroundColor = 'red';
         }
-        
-        //
-        createPages.restartBtn();
+    }
 
+    const addWinToPlayer = (winningPlayer) => {
         // change total wins of winning player
         if (winningPlayer === 'player-1') {
             gameFlow.player1.wins += 1;
             console.log(gameFlow.player1)
+            const plyr1Display = document.querySelector('.display-player-1');
+            plyr1Display.textContent = `${gameFlow.player1.name} - Wins: ${gameFlow.player1.wins}`
+
         } else if (winningPlayer === 'player-2') {
             gameFlow.player2.wins += 1;
             console.log(gameFlow.player2)
+            const plyr2Display = document.querySelector('.display-player-2');
+            plyr2Display.textContent = `${gameFlow.player2.name} - Wins: ${gameFlow.player2.wins}`
+            
         }
+    }
 
+    // DEAD FUNCTION ???
+    const giveInitativeToLoser = ()=> {
+        // the losing player starts next round
+        if (player1.wonLastRound === false) {
+
+        } 
+        
+    };
+
+    const newRndMarkPlyrTurn = () => {
+        // gets called by restart button
+        if (whoTurn.turn === 'player-1') {
+            markTrnPlyr1();
+        } else if (whoTurn.turn === 'player-2') {
+            markTrnPlyr2(); 
+        }
     }
 
     const checkWinConditions = () => {
@@ -367,50 +478,113 @@ const gameFlow = (()=> {
         // test
         // console.log(checkDraw)
        
-        if (  // first row wins
+        if (  // player 1 wins with first row 
             createPages.gameBoardArray[0].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[1].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[2].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
-            playerWins([0, 1, 2], 'player-1');
-            // make tiles not after win
+            markWinningTiles([0, 1, 2], 'player-1');
+            // make tiles not clickable after win
             createPages.tileNotClickable();
+            // add rematch button on win
+            createPages.rematchBtn();
+            // add restart button
+            createPages.resetBtn();
+            // mark winning player
+            markWinningPlyr('.display-player-1');
+            // add win to player
+            addWinToPlayer('player-1');
+            // give initiative to losing player after round
+            whoTurn.turn = 'player-2';    
+            // create winner display
+            createPages.winnerDisplay(player1.name);
             return
-        } else if(
+
+        } else if( // player 2 wins with first row 
             createPages.gameBoardArray[0].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[1].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[2].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+            markWinningTiles([0, 1, 2], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            markWinningPlyr('.display-player-2');
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            createPages.winnerDisplay(player2.name);
+
+
+
             return
-        } else if( // second row
+        } else if( // player 1 wins with second row
             createPages.gameBoardArray[3].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[5].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+            markWinningTiles([3, 4, 5], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            markWinningPlyr('.display-player-1');
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            createPages.winnerDisplay(player1.name);
+
             return
-        } else if(
+        } else if( // player 2 wins with second row
             createPages.gameBoardArray[3].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[5].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([3, 4, 5], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            markWinningPlyr('.display-player-2');
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            createPages.winnerDisplay(player2.name);
+
             return
-        } else if( // third row
+        } else if( // player 1 wins with third row
             createPages.gameBoardArray[6].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[7].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[8].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+
+            markWinningTiles([6, 7, 8], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            markWinningPlyr('.display-player-1');
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            createPages.winnerDisplay(player1.name);
+
             return
-        } else if(
+        } else if( // player 2 wins with third row
             createPages.gameBoardArray[6].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[7].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[8].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([6, 7, 8], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            markWinningPlyr('.display-player-2');
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            createPages.winnerDisplay(player2.name);
+
             return
         } else if( // first column
             createPages.gameBoardArray[0].firstElementChild.className === 'X' &&
@@ -513,7 +687,7 @@ const gameFlow = (()=> {
             // test
             console.log('tile is marked by palyers')
             return;
-        } else if(gameFlow.whoTurn.turn === 'player1') {
+        } else if(gameFlow.whoTurn.turn === 'player-1') {
             // test
             //console.log('player one turn');
             //console.log('does not have child');
@@ -529,14 +703,14 @@ const gameFlow = (()=> {
             symX.setAttribute('class', 'X'); 
             currEle.appendChild(symX);
             // give initiative to player 2
-            gameFlow.whoTurn.turn = 'player2';
+            gameFlow.whoTurn.turn = 'player-2';
 
             // mark player-2 and clear player-1 after new mark was set
             gameFlow.markTrnPlyr2();
 
             // test
             //console.log(gameFlow.whoTurn.turn);
-        } else if(gameFlow.whoTurn.turn === 'player2') {
+        } else if(gameFlow.whoTurn.turn === 'player-2') {
 
             // mark player-2 and clear player-1 before new mark is set
             gameFlow.markTrnPlyr2();
@@ -547,7 +721,7 @@ const gameFlow = (()=> {
             symO.setAttribute('class', 'O');
             currEle.appendChild(symO);
             // give initiative to player 2
-            gameFlow.whoTurn.turn = 'player1';
+            gameFlow.whoTurn.turn = 'player-1';
 
             // mark player-1 and clear player-2 after new mark was set
             gameFlow.markTrnPlyr1();
@@ -559,7 +733,8 @@ const gameFlow = (()=> {
 
 
     return {
-        clickTile, markTrnPlyr1, markTrnPlyr2, checkWinConditions, 
+        clickTile, markTrnPlyr1, markTrnPlyr2, checkWinConditions, newRndMarkPlyrTurn,
+        resetPlayerObjs,
         whoTurn, player1, player2,
     }
 })();
