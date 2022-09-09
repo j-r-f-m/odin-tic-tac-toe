@@ -92,31 +92,87 @@ form {
     display: flex;
 }
 
+
+
 .game-board {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr ;
     grid-template-rows: 1fr 1fr 1fr ;
-    column-gap: 0.5rem;
-    row-gap: 0.5rem;
+    column-gap: 0.75rem;
+    row-gap: 0.75rem;
 }
 
 /* ---------------------------- styling ----------------------------------- */
 header {
-    background-color: #5A464C;
+    background-color: #247BA0;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0px 2px  10px gray;
 }
 
 main {
-    background-color: #FFFACC;
+    background-color: #E2E2E2;
+    z-index: 1;
 }
+
 
 #btn-start {
     padding: 2rem 4rem 2rem 4rem;
 }
 
+#btn-submit {
+    height: 1.5rem;
+}
+
+#btn-reset, #btn-rematch {
+    margin: 1rem;
+    padding: 1rem;
+    width: 8rem;
+}
+
+.btn  {
+    
+    background-color: #652B57;
+    border: none;
+    box-shadow: 0px 2px  10px rgb(48, 48, 48);
+    border-radius: 5px;
+}
+
+.btn:hover, .btn:focus {
+    background-color: #742C55;   
+    outline: none !important;
+}
+
+
+
 
 form {
-    background-color: #5A464C;
+    background-color: #627E8A;
+    border-radius: 5px;
+    box-shadow: 0px 2px  10px gray;
 }
+
+input {
+    box-sizing: border-box;
+    border: 2px solid #627E8A;
+    border-radius: 2px;
+    padding: 0;
+    margin-bottom: 1rem;
+    box-shadow: inset 0px 2px  10px rgb(90, 90, 90);
+    border-radius: 5px;
+    height: 1.5rem;
+}
+
+input[type=text]:focus {
+    outline: none !important;
+    border:2px solid #E2E2E2;
+}
+
+input[type="text"], textarea {
+
+    background-color : #E2E2E2; 
+  
+  }
 
 .player-title, .btn-submit-container, .player-inputs {
     margin: 1rem;
@@ -126,26 +182,53 @@ form {
     margin-left: 2rem;
 }
 .main-title-container {
-    margin: 2rem;
+    margin: 0.25rem;
 } 
 
-.display-player-1, .display-player-2, .winning-player, #btn-reset, #btn-rematch  {
+.display-player-1, .display-player-2, .winning-player {
     margin: 1rem;
     padding: 1rem;
-    background-color: white;
+    background-color: #62777F;
+    border-radius: 5px;
+    box-shadow: 0px 2px  5px rgb(48, 48, 48);
 }
 
-.game-board {
+/* .game-board {
     background-color: black;
-}
+} */
 
 .tile {
-    background-color: #5A464C;
+    background-color: #62777F;
     height: 10rem;
     width: 10rem;
+    border-radius: 5px;
+    box-shadow: 0px 2px  5px rgb(48, 48, 48);
 
 }
+
+.tile:hover, .tile:focus {
+    background-color: #639DB6;
+}
+
+
 
 /* img {
     height: 10rem;
 } */
+
+
+/* --------------------------- fonts ---------------------------------- */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+
+
+.title-header {
+    font-weight: 700;
+    font-size: 25px;
+}
+
+#btn-start {
+    font-weight: 700;
+}

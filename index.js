@@ -227,16 +227,16 @@ const createPages = (() => {
         rstBtn.textContent = 'Reset Button';
         //sbtBtn.addEventListener('click',createPages.createPlayersDisplay);
         rstBtn.addEventListener('click', () => {
-            // delete nodes that are not needed anymore
+            /* // delete nodes that are not needed anymore
             dltChildNode('.game-board');
             dltChildNode('.button-display');
             dltChildNode('.main-title-container');
             //dltChildNode('.winning-player');
             // create the elements that are needed for a new round
             createStartBtn();
-            
+             */
+            location.reload();
 
-            
         });
         divBtnDisplay.appendChild(rstBtn);
         console.log('restart button');
@@ -356,7 +356,7 @@ const gameFlow = (()=> {
         const displayP2 = document.querySelector('.display-player-2');
         
         displayP1.style.backgroundColor = 'green';
-        displayP2.style.backgroundColor = 'white';
+        displayP2.style.backgroundColor = '#62777F';
         
 
     }
@@ -367,7 +367,7 @@ const gameFlow = (()=> {
         const displayP1 = document.querySelector('.display-player-1');
         const displayP2 = document.querySelector('.display-player-2');
         
-        displayP1.style.backgroundColor = 'white';
+        displayP1.style.backgroundColor = '#62777F';
         displayP2.style.backgroundColor = 'green';
         
 
@@ -408,21 +408,30 @@ const gameFlow = (()=> {
         
     }
 
-    const markWinningPlyr = (winningPlyr) => {
+    const markWinningPlyr = () => {
         // mark winning player with a color
 
-        const plyrWon = document.querySelector(winningPlyr);
+        const winning = document.querySelector('.winning-player');
+        winning.style.backgroundColor = '#AE4B4F'
+
+        const plyr1 = document.querySelector('.display-player-1');
+        plyr1.style.backgroundColor = '#62777F';
+
+        const plyr2 = document.querySelector('.display-player-2');
+        plyr2.style.backgroundColor = '#62777F';
+
+/*         
         plyrWon.style.backgroundColor = 'pink';
         if (winningPlyr === '.display-player-1') {
             // change losing player display color to white
             const plyrLost = document.querySelector('.display-player-2');
-            plyrLost.style.backgroundColor = 'white';
+            plyrLost.style.backgroundColor = '#62777F';
 
 
         } else if (winningPlyr === '.display-player-2') {
             const plyrLost = document.querySelector('.display-player-1');
-            plyrLost.style.backgroundColor = 'white';
-        }
+            plyrLost.style.backgroundColor = '#62777F';
+        } */
 
     
     }
@@ -431,7 +440,7 @@ const gameFlow = (()=> {
         // change color of winning tiles
         const divTilesList =  document.querySelectorAll('.tile');
         for (let i = 0; i < arrayWinningTiles.length; i++) {
-            divTilesList[arrayWinningTiles[i]].style.backgroundColor = 'red';
+            divTilesList[arrayWinningTiles[i]].style.backgroundColor = '#FB3640';
         }
     }
 
@@ -451,15 +460,6 @@ const gameFlow = (()=> {
             
         }
     }
-
-    // DEAD FUNCTION ???
-    const giveInitativeToLoser = ()=> {
-        // the losing player starts next round
-        if (player1.wonLastRound === false) {
-
-        } 
-        
-    };
 
     const newRndMarkPlyrTurn = () => {
         // gets called by restart button
@@ -491,14 +491,16 @@ const gameFlow = (()=> {
             createPages.rematchBtn();
             // add restart button
             createPages.resetBtn();
+            // create winner display
+            createPages.winnerDisplay(player1.name);
             // mark winning player
             markWinningPlyr('.display-player-1');
             // add win to player
             addWinToPlayer('player-1');
             // give initiative to losing player after round
             whoTurn.turn = 'player-2';    
-            // create winner display
-            createPages.winnerDisplay(player1.name);
+            
+            
             return
 
         } else if( // player 2 wins with first row 
@@ -511,10 +513,11 @@ const gameFlow = (()=> {
             createPages.tileNotClickable();
             createPages.rematchBtn();
             createPages.resetBtn();
-            markWinningPlyr('.display-player-2');
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
             addWinToPlayer('player-2');
             whoTurn.turn = 'player-1';
-            createPages.winnerDisplay(player2.name);
+            
 
 
 
@@ -529,10 +532,11 @@ const gameFlow = (()=> {
             createPages.tileNotClickable();
             createPages.rematchBtn();
             createPages.resetBtn();
-            markWinningPlyr('.display-player-1');
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
             addWinToPlayer('player-1');
             whoTurn.turn = 'player-2';    
-            createPages.winnerDisplay(player1.name);
+            
 
             return
         } else if( // player 2 wins with second row
@@ -546,10 +550,11 @@ const gameFlow = (()=> {
             createPages.tileNotClickable();
             createPages.rematchBtn();
             createPages.resetBtn();
-            markWinningPlyr('.display-player-2');
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
             addWinToPlayer('player-2');
             whoTurn.turn = 'player-1';
-            createPages.winnerDisplay(player2.name);
+            
 
             return
         } else if( // player 1 wins with third row
@@ -563,10 +568,11 @@ const gameFlow = (()=> {
             createPages.tileNotClickable();
             createPages.rematchBtn();
             createPages.resetBtn();
-            markWinningPlyr('.display-player-1');
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
             addWinToPlayer('player-1');
             whoTurn.turn = 'player-2';    
-            createPages.winnerDisplay(player1.name);
+            
 
             return
         } else if( // player 2 wins with third row
@@ -580,32 +586,66 @@ const gameFlow = (()=> {
             createPages.tileNotClickable();
             createPages.rematchBtn();
             createPages.resetBtn();
-            markWinningPlyr('.display-player-2');
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
             addWinToPlayer('player-2');
             whoTurn.turn = 'player-1';
-            createPages.winnerDisplay(player2.name);
+            
 
             return
-        } else if( // first column
+        } else if( // player 1 wins with first column 
             createPages.gameBoardArray[0].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[3].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[6].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+            
+            markWinningTiles([0, 3, 6], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            
+            
             return
-        } else if(
+        } else if( // player 2 wins with first column
             createPages.gameBoardArray[0].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[3].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[6].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([0, 3, 6], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            
+
             return
-        } else if( // second column
+        } else if( // player 1 wins with second column
             createPages.gameBoardArray[1].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[7].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+
+            markWinningTiles([1, 4, 7], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            
+
             return
         } else if(
             createPages.gameBoardArray[1].firstElementChild.className === 'O' &&
@@ -613,48 +653,125 @@ const gameFlow = (()=> {
             createPages.gameBoardArray[7].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([1, 4, 7], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            
+
             return
-        } else if( // third column
+        } else if( // player 1 wins with third column
             createPages.gameBoardArray[2].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[5].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[8].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+
+            markWinningTiles([2, 5, 8], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            
+
             return
-        } else if(
+        } else if( // player 2 wins with third coulumn
             createPages.gameBoardArray[2].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[5].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[8].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([2, 5, 8], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            
+
             return
-        } else if( // from left to right
+        } else if( // player 1 wins with a line from upper left to lowe right
             createPages.gameBoardArray[0].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[8].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+
+            markWinningTiles([0, 4, 8], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            
+
             return
-        } else if(
+        } else if( // player 2 wins with a line from upper left to lowe right
             createPages.gameBoardArray[0].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[8].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([0, 4, 8], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            
+
             return
-        } else if( // from right to left
+        } else if( // player 1 wins with a line from lower left to upper right
             createPages.gameBoardArray[2].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[6].firstElementChild.className === 'X'
         ) {
             console.log('player 1 wins')
+
+            markWinningTiles([2, 4, 6], 'player-1');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player1.name);
+            markWinningPlyr();
+            addWinToPlayer('player-1');
+            whoTurn.turn = 'player-2';    
+            
+
             return
-        } else if(
+        } else if( // player 2 wins with a line from lower left to upper right
             createPages.gameBoardArray[2].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[4].firstElementChild.className === 'O' &&
             createPages.gameBoardArray[6].firstElementChild.className === 'O'
         ) {
             console.log('palyer 2 wins')
+
+            markWinningTiles([2, 4, 6], 'player-2');
+            createPages.tileNotClickable();
+            createPages.rematchBtn();
+            createPages.resetBtn();
+            createPages.winnerDisplay(player2.name);
+            markWinningPlyr();
+            addWinToPlayer('player-2');
+            whoTurn.turn = 'player-1';
+            
+
             return
         } else if (checkDraw) {
             console.log('draw');
