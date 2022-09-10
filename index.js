@@ -191,6 +191,23 @@ const createPages = (() => {
         console.log(mainDivTitleArray) */
 
     }
+
+    const drawDisplay = () => {
+        // show tha darw display
+        const divWinner = document.createElement('div');
+        divWinner.setAttribute('class', 'winning-player');
+        divWinner.textContent = `Draw!`;
+
+        const divMainTitle = document.querySelector('.main-title-container');
+        divMainTitle.insertBefore(divWinner, divMainTitle.children[1]);
+
+        // set cloros of player display to default color
+        const displayP1 = document.querySelector('.display-player-1');
+        const displayP2 = document.querySelector('.display-player-2');
+        
+        displayP1.style.backgroundColor = '#62777F';
+        displayP2.style.backgroundColor = '#62777F';
+    }
     
     const rematchBtn = () => {
         // create button that restarts game on lick
@@ -310,7 +327,7 @@ const createPages = (() => {
 
     return {
         createStartBtn,  createPlayerForm, createBoard, tileNotClickable,
-        createPlayersDisplay, rematchBtn, resetBtn,winnerDisplay, 
+        createPlayersDisplay, rematchBtn, resetBtn, winnerDisplay, drawDisplay, 
         gameBoardArray,
     }
 })();
@@ -399,10 +416,19 @@ const gameFlow = (()=> {
             if (array.length === 9) {
                 // if the array has a lenght of 9 all tiles have been clicked
                 
+                // make tiles not clickable after win
+                createPages.tileNotClickable();
+                // add rematch button on win
+                createPages.rematchBtn();
+                // add restart button
+                createPages.resetBtn();
+                // create winner display
+                createPages.drawDisplay();
                 // test
-                //console.log('all tiles have been clicked -> Draw')
+                console.log('all tiles have been clicked -> Draw')
                 return true;
-            }
+            } 
+            
         }
 
         
@@ -475,9 +501,12 @@ const gameFlow = (()=> {
 
 
         const checkDraw = checkForDraw();
+        
         // test
-        // console.log(checkDraw)
+        console.log(checkDraw)
        
+        // if checkForDraw() -> true -> draw
+
         if (  // player 1 wins with first row 
             createPages.gameBoardArray[0].firstElementChild.className === 'X' &&
             createPages.gameBoardArray[1].firstElementChild.className === 'X' &&
@@ -517,10 +546,6 @@ const gameFlow = (()=> {
             markWinningPlyr();
             addWinToPlayer('player-2');
             whoTurn.turn = 'player-1';
-            
-
-
-
             return
         } else if( // player 1 wins with second row
             createPages.gameBoardArray[3].firstElementChild.className === 'X' &&
